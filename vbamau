@@ -1,0 +1,1163 @@
+Option Explicit
+Sub xoa_dong_trong_1()
+Dim i As Integer
+'XOA DONG THOA MAN DIEU KIEN
+    For i = 10 To 2 Step -1
+        If Range("B" & i).Value = "x" Then
+            Range("B" & i).EntireRow.Delete
+        End If
+    Next i
+End Sub
+
+Sub highlight_1()
+'TO MAU THOA DIEN KIEN
+    For i = 2 To 10
+        If Range("B" & i).Value = "x" Then
+            Range("B" & i).Offset(0, -1).Resize(1, 2).Interior.Color = RGB(0, 255, 0)
+        End If
+    Next i
+End Sub
+Sub enter_formula_1()
+'DIEN CONG THUC VAO O
+    Range("B11").Formula = "=COUNTIF(B2:B10,""x"")"
+End Sub
+Sub GHICHU()
+'Debug.Print ThisWorkbook.Worksheets.Count -> CHU Y: SHEET KHAC WORKSHEETS, VA NEN DUNG WORKSHEETS
+'DEM SO SHEET CO TRONG FILE
+'ThisWorkbook.Worksheets("Data") -> THAM CHIEU DEN WORKSHEET CO TEN LA DATA
+'Set dataSheet = Worksheets("Data") -> NEN DUNG CACH NAY VI WORKSHEETS KHAC SHEETS
+
+
+
+
+
+
+
+
+End Sub
+'Vi du 1: Copy vung du lieu tu 1 file ra file moi
+Sub CopyFiletoAnotherWorkbook()
+    'Copy vung du lieu
+        Sheets("Vd 1").Range("B3:C10").Copy
+    'Tao file moi
+        Workbooks.Add
+    'Paste du lieu
+        ActiveSheet.Paste
+    'Tat canh bao
+        Application.DisplayAlerts = False
+    'Luu file
+        ActiveWorkbook.SaveAs Filename:=ThisWorkbook.Path & "\File moi.xlsx"
+        ActiveWorkbook.Close
+    'Bat lai canh bao
+        Application.DisplayAlerts = True
+End Sub
+
+'Vi du 2: Bo an toan bo hang cot
+Sub ShowHiddenRows()
+    'Bo an cot
+    Columns.EntireColumn.Hidden = False
+    
+    'Bo an hang
+    Rows.EntireRow.Hidden = False
+End Sub
+
+'Vi du 3: Xoa hang rong va cot rong
+Public Sub DeleteBlankRows()
+    'Khai bao bien
+    Dim SourceRange As Range
+    Dim EntireRow, EntireColumn As Range
+    Application.ScreenUpdating = False
+    
+    'Gan bien la vung cell duoc chon
+    Set SourceRange = Application.Selection
+ 
+    'Kiem tra co vung nao duoc chon
+    If Not (SourceRange Is Nothing) Then
+        
+ 
+        For i = SourceRange.Rows.Count To 1 Step -1
+            Set EntireRow = SourceRange.Cells(i, 1).EntireRow 'Hang I cot 1
+            If Application.WorksheetFunction.CountA(EntireRow) = 0 Then
+                EntireRow.Delete
+            End If
+        Next
+ 
+        For i = SourceRange.Columns.Count To 1 Step -1
+            Set EntireColumn = SourceRange.Cells(1, i).EntireColumn 'Hang 1 cot I
+            If Application.WorksheetFunction.CountA(EntireColumn) = 0 Then
+                EntireColumn.Delete
+            End If
+        Next
+        
+        Application.ScreenUpdating = True
+    End If
+End Sub
+
+'Vi du 4: tim cell rong
+Sub FindEmptyCell()
+    ActiveCell.Offset(1, 0).Select
+       Do While Not IsEmpty(ActiveCell)
+          ActiveCell.Offset(1, 0).Select
+       Loop
+End Sub
+
+'Vi du 5: Thay the cell rong
+Sub FindAndReplace()
+    'Khai bao bien
+        Dim MyRange As Range
+        Dim MyCell As Range
+    'Co luu file truoc thay doi khong?
+        Select Case MsgBox("Khong the undo hanh dong nay.  " & _
+                            "Luu workbook truoc?", vbYesNoCancel)
+            Case Is = vbYes
+            ThisWorkbook.Save
+            Case Is = vbCancel
+            Exit Sub
+        End Select
+    'Gan bien la vung duoc chon
+        Set MyRange = Selection
+    'Bat dau vong lap.
+        For Each MyCell In MyRange
+    'Kiem tra co phai la cell rong hay khong
+            If Len(MyCell.Value) = 0 Then
+                MyCell = 0
+            End If
+    'Kiem tra cell tiep theo
+        Next MyCell
+End Sub
+
+'Vi du 6: Xoa cac khoang trang thua
+Sub TrimTheSpaces()
+    'Khai bao bien
+        Dim MyRange As Range
+        Dim MyCell As Range
+    'Co luu file truoc khi thuc hien thao tac khong
+        Select Case MsgBox("Khong the undo hanh dong nay.  " & _
+                            "Luu file truoc khong?", vbYesNoCancel)
+            Case Is = vbYes
+            ThisWorkbook.Save
+            Case Is = vbCancel
+            Exit Sub
+        End Select
+    'Dinh nghia vung muc tieu
+        Set MyRange = Selection
+    'Bat dau vong lap
+        For Each MyCell In MyRange
+    'Got khoang trang.
+            If Not IsEmpty(MyCell) Then
+                MyCell = Excel.WorksheetFunction.Trim(MyCell)
+            End If
+    'Kiem tra cell tiep theo
+        Next MyCell
+End Sub
+
+'Vi du 7: To mau nhung cell trung nhau
+Sub HighlightDuplicates()
+    'Khai bao bien
+        Dim MyRange As Range
+        Dim MyCell As Range
+    'Dinh nghia bien muc tieu
+        Set MyRange = Selection
+    'Bat dau vong lap
+        For Each MyCell In MyRange
+    'Kiem tra cell co trung voi cell nao khac khong.
+            If WorksheetFunction.CountIf(MyRange, MyCell.Value) > 1 Then
+                MyCell.Interior.ColorIndex = 36
+            End If
+    'Kiem tra cell tiep theo
+        Next MyCell
+End Sub
+
+'Vi du 8: Trich xuat tu (word) tu cell
+Function FindWord(Source As String, Position As Integer) As String
+     On Error Resume Next
+     FindWord = Split(WorksheetFunction.Trim(Source), " ")(Position - 1)
+     On Error GoTo 0
+End Function
+
+Function FindWordRev(Source As String, Position As Integer) As String
+     Dim Arr() As String
+     Arr = VBA.Split(WorksheetFunction.Trim(Source), " ")
+     On Error Resume Next
+     FindWordRev = Arr(UBound(Arr) - Position + 1)
+     On Error GoTo 0
+End Function
+Sub Paste_OneRow()
+
+'Copy and Paste Row
+Sheets("NAME1").Range("1:1").Copy Sheets("NAME2").Range("1:1")
+
+Application.CutCopyMode = False
+
+End Sub
+
+Sub copy_paste_value()
+ThisWorkbook.Worksheets("NAME1").Range("A1:A10").Copy
+ThisWorkbook.Worksheets("NAME2").Range("B1:B10").PasteSpecial Paste:=xlPasteValues
+End Sub
+Sub cut()
+ThisWorkbook.Worksheets("NAME1").Range("A1:A10").cut ThisWorkbook.Worksheets("NAME2").Range("B1:B10")
+Range("$B$1:$B$10").EntireColumn.Delete
+MsgBox Range("$B$1:$B$10").Columns.Count
+Range("$B$1:$B$10").Rows.Count
+Range("$B$1:$B$10").EntireColumn.Delete
+Range("$B$1:$B$10").EntireRow.Delete
+Range("$B$1:$B$10").EntireColumn.Insert
+Range("$B$1:$B$10").EntireRow.Insert
+lCol = Cells(1, Columns.Count).End(xlToLeft).Column 'last column
+lRow = Cells(Rows.Count, 1).End(xlUp).Row           'last row
+Range("$B$1:$B$10").Activate
+Range("$B$1:$B$10").ClearContents
+Range("$B$1:$B$10").Copy
+Range("$B$1:$B$10").EntireRow.Delete
+For Each Cell In Range("$B$1:$B$10")
+    'Do Something
+Next Cell
+Range("$B$1:$B$10").FormulaR1C1
+Range("$B$1:$B$10").EntireRow.Insert
+Range("$B$1:$B$10").PasteSpecial xlPasteFormats
+Range("$B$1:$B$10").Paste
+Range("$B$1:$B$10").Value
+Sheets("NAME2").Range("$B$1:$B$10").Columns.Count
+Sheets("NAME2").Range("$B$1:$B$10").Rows.Count
+Sheets("NAME2").Range("$B$1:$B$10").EntireColumn.Delete
+Sheets("NAME2").Range("$B$1:$B$10").EntireRow.Delete
+Sheets("NAME2").Range("$B$1:$B$10").EntireColumn.Insert
+Sheets("NAME2").Range("$B$1:$B$10").EntireRow.Insert
+lCol = Sheets("NAME2").Cells(1, Columns.Count).End(xlToLeft).Column 'last column
+lRow = Sheets("NAME2").Cells(Rows.Count, 1).End(xlUp).Row           'last row
+Sheets("NAME2").Range("$B$1:$B$10").Activate
+Sheets("NAME2").Range("$B$1:$B$10").ClearContents
+Sheets("NAME2").Range("$B$1:$B$10").Copy
+Sheets("NAME2").Range("$B$1:$B$10").EntireRow.Delete
+Sheets("NAME2").Range("$B$1:$B$10").FormulaR1C1
+Sheets("NAME2").Range("$B$1:$B$10").EntireRow.Insert
+Sheets("NAME2").Range("$B$1:$B$10").PasteSpecial xlPasteFormats
+Sheets("NAME2").Range("$B$1:$B$10").Paste
+Sheets("NAME2").Range("$B$1:$B$10").Value
+Dim ws As Worksheet
+For Each ws In Worksheets
+    Sheets("NAME2").Visible = True
+Next ws
+Sheets("NAME2").Visible = False
+Sheets("NAME2").Visible = True
+Sheets("NAME2").Visible = xlVeryHidden
+Sheets("NAME2").Delete
+For Each ws In Worksheets
+    'Do something
+Next ws
+Sheets.Add After:=ActiveSheet
+Sheets("NAME2").Name
+Sheets("Sheet1").Protect Password:="test123"
+Sheets("NAME2").Select
+Sheets("NAME2").Unprotect Password:="test123"
+Workbooks("New Microsoft Excel Worksheet.xlsm").Sheets("NAME2").Range("$B$1:$B$10").Columns.Count
+Workbooks("New Microsoft Excel Worksheet.xlsm").Sheets("NAME2").Delete
+For Each ws In Workbooks("New Microsoft Excel Worksheet.xlsm").Worksheets
+    'Do something
+Next ws
+Workbooks("New Microsoft Excel Worksheet.xlsm").Sheets.Add After:=ActiveSheet
+Workbooks("New Microsoft Excel Worksheet.xlsm").Sheets("NAME2").Name
+Workbooks("New Microsoft Excel Worksheet.xlsm").Sheets("NAME2").Protect "password"
+Workbooks("New Microsoft Excel Worksheet.xlsm").Sheets("NAME2").Select
+Workbooks("New Microsoft Excel Worksheet.xlsm").Sheets("NAME2").Unprotect "password"
+Workbooks("New Microsoft Excel Worksheet.xlsm").Activate
+Workbooks.Add
+Workbooks("New Microsoft Excel Worksheet.xlsm").Close
+For Each wb In Application.Workbooks
+    'Do something
+Next wb
+Workbooks.Open Filename:= _
+  Application.ActiveWorkbook.Path & "\wb.xlsm"
+ActiveWorkbook.SaveAs Filename:=Application.ActiveWorkbook.Path & "\new_wb.xlsm", _
+  FileFormat:=52   '52 for .xlsm
+ActiveWorkbook.Save
+
+'CURRENT
+Range ("$B$1:$B$10")
+Workbooks("New Microsoft Excel Worksheet.xlsm").Sheets("NAME2").Range ("$B$1:$B$10")
+Workbooks("New Microsoft Excel Worksheet.xlsm").Sheets ("NAME2")
+Workbooks ("New Microsoft Excel Worksheet.xlsm")
+Sheets("NAME2").Range ("$B$1:$B$10")
+Sheets ("NAME2")
+'CURRENT
+Dim Cell As Range
+
+For Each Cell In Range("$B$1:$B$10")
+    'Do Something
+Next Cell
+Dim i As Long
+
+Do Until i < 5
+    'Do Something
+    i = i + 1
+Loop
+Dim i As Long
+
+For i = 1 To 5
+    'Do Something
+Next i
+Dim MyString As String
+Dim Counter As Integer
+
+MyString = "AutomateExcel" 'define string
+
+For Counter = 1 To Len(MyString)
+    'do something
+Next
+For Each ws In Worksheets
+    'Do something
+Next ws
+Sub Delete_Blank_Columns()
+    Dim nCol As Long
+    
+    With ActiveSheet
+        nCol = .Cells.SpecialCells(xlLastCell).Column
+        Do Until nCol = 1
+            If WorksheetFunction.CountA(.Columns(nCol)) = 0 Then
+                .Columns(nCol).Delete
+            End If
+            
+            nCol = nCol - 1
+        Loop
+    End With
+End Sub
+Sub Delete_Blank_Rows_Fast_Method()
+    Dim nRow As Long, rng As Range
+    
+    With ActiveSheet
+        For nRow = 1 To .Cells.SpecialCells(xlCellTypeLastCell).Row
+            If WorksheetFunction.CountA(.Rows(nRow)) = 0 Then
+                If Not rng Is Nothing Then
+                    Set rng = Union(rng, .Cells(nRow, 1))
+                Else
+                    Set rng = .Cells(nRow, 1)
+                End If
+            End If
+        Next nRow
+        
+        rng.EntireRow.Delete
+    End With
+End Sub
+Sub Delete_Blank_Rows()
+    Dim nRow As Long
+    
+    With ActiveSheet
+        nRow = .Cells.SpecialCells(xlCellTypeLastCell).Row
+        Do Until nRow = 1
+            If WorksheetFunction.CountA(.Rows(nRow)) = 0 Then
+                .Rows(nRow).Delete
+            End If
+            
+            nRow = nRow - 1
+        Loop
+    End With
+End Sub
+Sub Delete_Columns_w_Criteria()
+    Dim nCol As Long
+    
+    With ActiveSheet
+        nCol = .Cells.SpecialCells(xlLastCell).Column
+        Do Until nCol = 1
+            If .Columns(nCol).Rows(1) = "delete" Then
+                .Columns(nCol).Delete
+            End If
+            
+            nCol = nCol - 1
+        Loop
+    End With
+End Sub
+Sub Delete_Columns_with_Blank_Header()
+    Dim nCol As Long
+    
+    With ActiveSheet
+        nCol = .Cells.SpecialCells(xlLastCell).Column
+        Do Until nCol = 1
+            If WorksheetFunction.CountA(.Columns(nCol)) = 0 Then
+                .Columns(nCol).Delete
+            End If
+            
+            nCol = nCol - 1
+        Loop
+    End With
+End Sub
+Sub Delete_Even_Column()
+    Dim nCol As Long
+    
+    With ActiveSheet
+        nCol = .Cells.SpecialCells(xlLastCell).Column
+        Do Until nCol = 1
+            If nRow Mod 2 = 0 Then
+                .Columns(nCol).Delete
+            End If
+            
+            nCol = nCol - 1
+        Loop
+    End With
+End Sub
+Sub Delete_Even_Row()
+    Dim nRow As Long
+    
+    With ActiveSheet
+        nRow = .Cells.SpecialCells(xlCellTypeLastCell).Row
+        Do Until nRow = 1
+            If nRow Mod 2 = 0 Then
+                .Rows(nRow).Delete
+            End If
+            
+            nRow = nRow - 1
+        Loop
+    End With
+End Sub
+Sub Delete_Odd_Column()
+    Dim nCol As Long
+    
+    With ActiveSheet
+        nCol = .Cells.SpecialCells(xlLastCell).Column
+        Do Until nCol = 1
+            If nRow Mod 2 = 1 Then
+                .Columns(nCol).Delete
+            End If
+            
+            nCol = nCol - 1
+        Loop
+    End With
+End Sub
+Sub Delete_Odd_Row()
+    Dim nRow As Long
+    
+    With ActiveSheet
+        nRow = .Cells.SpecialCells(xlCellTypeLastCell).Row
+        Do Until nRow = 1
+            If nRow Mod 2 = 1 Then
+                .Rows(nRow).Delete
+            End If
+            
+            nRow = nRow - 1
+        Loop
+    End With
+End Sub
+Sub Delete_Rows_w_Criteria()
+    Dim nRow As Long
+    
+    With ActiveSheet
+        nRow = .Cells.SpecialCells(xlCellTypeLastCell).Row
+        Do Until nRow = 1
+            If .Rows(nRow).Columns("A") = "delete" Then
+                .Rows(nRow).Delete
+            End If
+            
+            nRow = nRow - 1
+        Loop
+    End With
+End Sub
+Sub Highlight_Blank_Rows()
+    Dim nRow As Long
+    
+    With ActiveSheet
+        nRow = .Cells.SpecialCells(xlCellTypeLastCell).Row
+        Do Until nRow = 1
+            If WorksheetFunction.CountA(.Rows(nRow)) = 0 Then
+                .Rows(nRow).Interior.ColorIndex = 8
+            End If
+            
+            nRow = nRow - 1
+        Loop
+    End With
+End Sub
+Sub Highlight_Even_Row()
+    Dim nRow As Long
+    
+    With ActiveSheet
+        nRow = .Cells.SpecialCells(xlCellTypeLastCell).Row
+        Do Until nRow = 1
+            If nRow Mod 2 = 0 Then
+                .Rows(nRow).Interior.ColorIndex = 8
+            End If
+            
+            nRow = nRow - 1
+        Loop
+    End With
+End Sub
+Sub Highlight_Odd_Row()
+    Dim nRow As Long
+    
+    With ActiveSheet
+        nRow = .Cells.SpecialCells(xlCellTypeLastCell).Row
+        Do Until nRow = 1
+            If nRow Mod 2 = 0 Then
+                .Rows(nRow).Interior.ColorIndex = 8
+            End If
+            
+            nRow = nRow - 1
+        Loop
+    End With
+End Sub
+Sub Delete_All_Shapes_In_Worksheet()
+    Dim shp As Shape
+    
+    For Each shp In ActiveSheet.Shapes
+        shp.Delete
+    Next shp
+End Sub
+Sub Hide_All_Shapes_In_Worksheet()
+    Dim shp As Shape
+    
+    For Each shp In ActiveSheet.Shapes
+        shp.Visible = msoFalse
+    Next shp
+End Sub
+Sub Resize_All_Shapes_In_Worksheet()
+    Dim shp As Shape
+    
+    For Each shp In ActiveSheet.Shapes
+        shp.Width = 100
+        shp.Height = 100
+    Next shp
+End Sub
+Sub Unhide_All_Shapes_In_Worksheet()
+    Dim shp As Shape
+    
+    For Each shp In ActiveSheet.Shapes
+        shp.Visible = msoTrue
+    Next shp
+End Sub
+Sub Protect_And_Hide_All()
+    Dim ws As Worksheet
+    
+    For Each ws In Worksheets
+        ws.Protect
+        ws.Visible = xlSheetHidden
+    Next
+End Sub
+Sub Unprotect_And_UnHide_All()
+    Dim ws As Worksheet
+    
+    For Each ws In Worksheets
+        ws.Unprotect
+        ws.Visible = xlSheetVisible
+    Next
+End Sub
+Sub Save_And_Close_All_Except_Active_ThisWorkbook()
+    Dim wb As Workbook
+    
+    For Each wb In Workbooks
+        If wb.Name <> ActiveWorkbook.Name And wb.Name <> ThisWorkbook.Name Then
+            wb.Close SaveChanges:=True
+        End If
+    Next
+End Sub
+Sub Save_And_Close_All_Workbooks()
+    Dim wb As Workbook
+    
+    For Each wb In Workbooks
+        wb.Close SaveChanges:=True
+    Next
+End Sub
+
+
+
+
+'--------------------------------------------------------------
+Select Case N
+    Case Is < 10
+        'Do if n is less than 10
+        
+    Case Is < 20
+        'Do if n is less than 20
+        
+    Case Else
+        'Do if n is not less than 20
+        
+End Select
+'--------------------------------------------------------------
+Select Case N
+    Case 1, 2
+        'Do if n = 1 or 2
+        
+    Case 3
+        'Do if n = 3
+        
+    Case Else
+        'Do if n <> 1,2,3
+        
+End Select
+'--------------------------------------------------------------
+Select Case N
+    Case 1 To 10
+        'Do if n is between 1 and 10
+        
+    Case 11 To 20
+        'Do if n is between 11 and 20
+        
+    Case Else
+        'Do if n is not between 1 and 20
+        
+End Select
+'--------------------------------------------------------------
+Dim N As Long
+N = 5
+
+If N > 0 And N < 10 Then
+    'If TRUE then do:
+    
+End If
+'--------------------------------------------------------------
+Dim N As Long
+N = 5
+
+If N > 0 Then
+    'If TRUE then do:
+    
+Else
+    'If FALSE then do:
+    
+End If
+'--------------------------------------------------------------
+Dim N As Long
+N = 5
+If N > 0 Then
+    'If TRUE then do:
+    
+ElseIf N = 0 Then
+    'Elseif TRUE then do:
+    
+Else
+    'If FALSE then do:
+    
+End If
+'--------------------------------------------------------------
+Dim N As Long
+N = 5
+If N < 0 Or N > 10 Then
+    'If TRUE then do:
+    
+End If
+'--------------------------------------------------------------
+Dim N As Long
+N = 5
+If N > 0 Then
+    'If TRUE then do:
+    
+End If
+'--------------------------------------------------------------
+Dim Cell As Range, ws As Worksheet
+
+Set ws = ActiveSheet
+
+For Each Cell In ws.Range("A1:A10")
+    Cell.Clear
+    Cell.ClearContents
+    Cell.Value = "ABCXYZ"
+Next Cell
+
+'--------------------------------------------------------------
+Dim Cell As Range, ws As Worksheet
+
+Set ws = ActiveSheet
+
+For Each Cell In ws.Range("A1:A10")
+    Cell.Offset(0, 1).Value = "ABCXYZ"
+    Cell.Formula = "NOW()"
+    Cell.Offset(0, 1).Formula = "NOW()"
+Next Cell
+
+'--------------------------------------------------------------
+Dim Cell As Range, ws As Worksheet
+
+Set ws = ActiveSheet
+
+For Each Cell In ws.Range("A1:A10")
+    Cell.FormulaR1C1 = "ABCXYZ"
+    Cell.Offset(0, 1).FormulaR1C1 = "NOW()"
+    Cell.Select
+Next Cell
+
+'--------------------------------------------------------------
+Dim Cell As Range, ws As Worksheet
+
+Set ws = ActiveSheet
+
+For Each Cell In ws.Range("A1:A10")
+    Cell.EntireRow.Insert
+    Cell.EntireRow.Delete
+    Cell.EntireRow.Hidden = True
+Next Cell
+
+'--------------------------------------------------------------
+Dim Cell As Range, ws As Worksheet
+
+Set ws = ActiveSheet
+
+For Each Cell In ws.Range("A1:A10")
+    Cell.EntireRow.Hidden = False
+    Cell.EntireColumn.Insert
+    Cell.EntireColumn.Delete
+Next Cell
+
+'--------------------------------------------------------------
+Dim Cell As Range, ws As Worksheet
+
+Set ws = ActiveSheet
+
+For Each Cell In ws.Range("A1:A10")
+    Cell.EntireColumn.Hidden = True
+    Cell.EntireColumn.Hidden = False
+Next Cell
+
+'--------------------------------------------------------------BEGIN WITH
+Dim Cell As Range, ws As Worksheet
+
+Set ws = ActiveSheet
+
+For Each Cell In ws.Range("A1:A10")
+    If Cell.Offset(0, 1).Value Like "ABCXYZ*" Then
+        Cell.ClearContents
+    End If
+Next Cell
+
+'--------------------------------------------------------------DOES NOT BEGIN WITH
+Dim Cell As Range, ws As Worksheet
+
+Set ws = ActiveSheet
+
+For Each Cell In ws.Range("A1:A10")
+    If Not Cell.Offset(0, 1).Value Like "ABCXYZ*" Then
+        Cell.ClearContents
+    End If
+Next Cell
+
+'--------------------------------------------------------------END WITH
+Dim Cell As Range, ws As Worksheet
+
+Set ws = ActiveSheet
+
+For Each Cell In ws.Range("A1:A10")
+    If Cell.Offset(0, 1).Value Like "*ABCXYZ" Then
+        Cell.ClearContents
+    End If
+Next Cell
+
+'--------------------------------------------------------------DOES NOT END WITH
+Dim Cell As Range, ws As Worksheet
+
+Set ws = ActiveSheet
+
+For Each Cell In ws.Range("A1:A10")
+    If Not Cell.Offset(0, 1).Value Like "*ABCXYZ" Then
+        Cell.ClearContents
+    End If
+Next Cell
+
+'--------------------------------------------------------------CONTAIN
+Dim Cell As Range, ws As Worksheet
+
+Set ws = ActiveSheet
+
+For Each Cell In ws.Range("A1:A10")
+    If Cell.Offset(0, 1).Value Like "*ABCXYZ*" Then
+        Cell.ClearContents
+    End If
+Next Cell
+
+'--------------------------------------------------------------DOES NOT CONTAIN
+Dim Cell As Range, ws As Worksheet
+
+Set ws = ActiveSheet
+
+For Each Cell In ws.Range("A1:A10")
+    If Not Cell.Offset(0, 1).Value Like "*ABCXYZ*" Then
+        Cell.ClearContents
+    End If
+Next Cell
+
+'--------------------------------------------------------------IS TEXT
+Dim Cell As Range, ws As Worksheet
+
+Set ws = ActiveSheet
+
+For Each Cell In ws.Range("A1:A10")
+    If WorksheetFunction.IsText(Cell.Offset(0, 1).Value) Then
+        Cell.ClearContents
+    End If
+Next Cell
+
+'--------------------------------------------------------------
+Workbooks("New Microsoft Excel Worksheet.xlsm").Worksheets("NAME1").Range("A1:A10").Copy
+Workbooks("New Microsoft Excel Worksheet.xlsm").Worksheets("NAME2").Range("B1:B10").PasteSpecial Paste:=xlPasteFormulas
+
+'--------------------------------------------------------------
+Range("A1:A10").Copy
+Range("B1:B10").PasteSpecial Paste:=xlPasteValues
+'--------------------------------------------------------------
+Range("A1:A10").Copy
+Range("B1:B10").PasteSpecial Paste:=xlPasteFormats
+'--------------------------------------------------------------
+Range("A1:A10").Copy
+Range("B1:B10").PasteSpecial Paste:=xlPasteComments
+'--------------------------------------------------------------
+Range("A1:A10").Copy
+Range("B1:B10").PasteSpecial Paste:=xlPasteValidation
+'--------------------------------------------------------------
+Range("A1:A10").Copy
+Range("B1:B10").PasteSpecial Paste:=xlPasteColumnWidths
+'--------------------------------------------------------------
+Range("A1:A10").Copy
+Range("B1:B10").PasteSpecial Paste:=xlPasteFormulasAndNumberFormats
+'--------------------------------------------------------------
+Range("A1:A10").Copy
+Range("B1:B10").PasteSpecial Paste:=xlPasteValuesAndNumberFormats
+'--------------------------------------------------------------
+Range("A1:A10").Copy
+Range("B1:B10").PasteSpecial Paste:=xlPasteAllMergingConditionalFormats
+'--------------------------------------------------------------
+Range("A1:A10").Copy
+Range("B1:B10").PasteSpecial Paste:=xlPasteValues, Operation:=xlPasteSpecialOperationSubtract, SkipBlanks:=True
+'--------------------------------------------------------------
+Sub RemoveDupsEx1()
+Range("A1:C8").RemoveDuplicates Columns:=1, Header:=xlYes
+End Sub
+'--------------------------------------------------------------
+Sub RemoveDups_UsedRange()
+ActiveSheet.UsedRange.RemoveDuplicates Columns:=1, Header:=xlYes
+End Sub
+'--------------------------------------------------------------
+Sub RemoveDups_MultColumns()
+ActiveSheet.UsedRange.RemoveDuplicates Columns:=Array(1, 2), Header:=xlYes
+End Sub
+'--------------------------------------------------------------
+Sub SimpleExample()
+ActiveSheet.UsedRange.RemoveDuplicates Columns:=Array(3, 1), Header:=xlYes
+End Sub
+'--------------------------------------------------------------
+Sub SimpleExample2()
+ActiveSheet.UsedRange.RemoveDuplicates Columns:=Array(1, 2, 3), Header:=xlYes
+End Sub
+'--------------------------------------------------------------
+Sub SimpleExample3()
+ActiveSheet.ListObjects("Table1").DataBodyRange.RemoveDuplicates Columns:=Array(1, 3), _
+Header:=xlYes
+End Sub
+'--------------------------------------------------------------
+Sub DuplicatesInRows()
+    'Turn off screen updating and alerts – we want the code to run smoothly without the user seeing
+    'what is going on
+    Application.ScreenUpdating = False
+    Application.DisplayAlerts = False
+    'Add a new worksheet
+    Sheets.Add After:=ActiveSheet
+    'Call the new worksheet 'CopySheet'
+    ActiveSheet.Name = "CopySheet"
+    'Copy the data from the original worksheet
+    Sheets("DataInRows").UsedRange.Copy
+    'Activate the new sheet that has been created
+    Sheets("CopySheet").Activate
+    'Paste transpose the data so that it is now in columns
+    ActiveSheet.Range("A1").PasteSpecial Paste:=xlPasteAll, Operation:=xlNone, SkipBlanks:= _
+        False, Transpose:=True
+   'Remove the duplicates for columns 1 and 3
+    ActiveSheet.UsedRange.RemoveDuplicates Columns:=Array(1, 3), Header _
+        :=xlYes
+    'Clear the data in the original worksheet
+    Sheets("DataInRows").UsedRange.ClearContents
+    'Copy the columns of data from the new worksheet created
+   Sheets("Copysheet").UsedRange.Copy
+   'Activate the original sheet
+    Sheets("DataInRows").Activate
+    
+   'Paste transpose the non-duplicate data
+    ActiveSheet.Range("A1").PasteSpecial Paste:=xlPasteAll, Operation:=xlNone, SkipBlanks:= _
+        False, Transpose:=True
+    'Delete the copy sheet - no longer needed
+    Sheets("Copysheet").Delete
+    'Activate the original sheet
+    Sheets("DataInRows").Activate
+    'Turn back on screen updating and alerts
+    Application.ScreenUpdating = True
+    Application.DisplayAlerts = True
+End Sub
+'--------------------------------------------------------------
+Worksheets("Sheet1").Sort.SortFields.Clear
+
+'--------------------------------------------------------------
+Sub SingleLevelSort()
+ 
+Worksheets("Sheet1").Sort.SortFields.Clear
+ 
+Range("A1:E6").Sort Key1:=Range("A1"), Header:=xlYes
+ 
+End Sub
+'--------------------------------------------------------------
+Sub MultiLevelSort()
+ 
+Worksheets("Sheet1").Sort.SortFields.Clear
+ 
+Range("A1:E6").Sort Key1:=Range("E1"), Key2:=Range("C1"), Header:=xlYes, _
+    Order1:=xlAscending, Order2:=xlDescending
+ 
+End Sub
+'--------------------------------------------------------------
+Sub MultiLevelSort2()
+End Sub
+ 
+Worksheets("Sheet1").Sort.SortFields.Clear
+Worksheets("Sheet1").UsedRange.Sort Key1:=Range("E1"), Key2:=Range("C1"), Header:=xlYes, _
+    Order1:=xlAscending, Order2:=xlDescending
+'--------------------------------------------------------------
+Sub SingleLevelSortByCellColor()
+ 
+Worksheets("Sheet1").Sort.SortFields.Clear
+ActiveWorkbook.Worksheets("Sheet1").Sort.SortFields.Add2 Key:=Range("A2:A6"), _
+    SortOn:=xlSortOnCellColor, Order:=xlAscending, DataOption:=xlSortNormal
+ 
+With ActiveWorkbook.Worksheets("Sheet1").Sort
+    .SetRange Range("A1:E6")
+    .Apply
+End With
+ 
+End Sub
+'--------------------------------------------------------------
+Sub SingleLevelSortByFontColor()
+ 
+Worksheets("Sheet1").Sort.SortFields.Clear
+ActiveWorkbook.Worksheets("Sheet1").Sort.SortFields.Add(Range("A2:A6"), _
+    xlSortOnFontColor, xlAscending, xlSortNormal).SortOnValue.Color = RGB(0, 0, 0)
+ 
+With ActiveWorkbook.Worksheets("Sheet1").Sort
+    .SetRange Range("A1:E6")
+    .Header = xlYes
+    .Orientation = xlTopToBottom
+    .Apply
+End With
+ 
+End Sub
+
+'SortOn = xlSortOnValues
+'Order = xlAscending
+'DataOption = xlSortNormal
+'Header = xlYes
+'MatchCase = False
+'Orientation = xlTopToBottom
+'SortMethod = xlPinYin
+'--------------------------------------------------------------
+
+'--------------------------------------------------------------
+
+Private Sub Worksheet_BeforeDoubleClick(ByVal Target As Range, Cancel As Boolean)
+'Assumption is made that data begins at cell A1
+ 
+'Create three variables to capture the target column selected and the maximum column and row of _
+'   the tabular data
+Dim Col As Integer, RCol As Long, RRow As Long
+ 
+'Check that the user has double-clicked on the header row – row 1 otherwise exit sub
+If Target.Row <> 1 Then Exit Sub
+ 
+'Capture the maximum rows in the tabular data range using the ‘UsedRange’ object
+RCol = ActiveSheet.UsedRange.Columns.Count
+ 
+'Capture the maximum columns in the tabular data range using the 'UsedRange' object
+RRow = ActiveSheet.UsedRange.Rows.Count
+ 
+'Check that the user has not double-clicked on a column outside of the tabular data range
+If Target.Column > RCol Then Exit Sub
+ 
+'Capture the column that the user has double-clicked on
+Col = Target.Column
+ 
+'Clear away previous sort parameters
+ActiveSheet.Sort.SortFields.Clear
+ 
+'Sort the tabular range as defined by maximum rows and columns from the 'UsedRange' object
+'Sort the tabular data using the column double-clicked by the user as the sort key
+ActiveSheet.Range(Cells(1, 1), Cells(RCol, RRow)).Sort Key1:=Cells(1, Col), Header:=xlYes
+ 
+'Select cell A1 – this is to ensure that the user is not left in edit mode after the sort is _
+'   completed
+ActiveSheet.Range("A1").Select
+ 
+End Sub
+Sub SortByBold()
+ 
+'Create variables to hold the number of rows and columns for the tabular data
+Dim RRow As Long, RCol As Long, N As Long
+ 
+'Turn off screen updating so that the user cannot see what is happening – they may see _
+'   values being altered and wonder why
+Application.ScreenUpdating = False
+ 
+'Capture the number of columns in the tabular data range
+RCol = ActiveSheet.UsedRange.Columns.Count
+ 
+'Capture the number of rows within the tabular data range
+RRow = ActiveSheet.UsedRange.Rows.Count
+ 
+'Iterate through all the rows in the tabular data range ignoring the header row
+For N = 2 To RRow
+    'If a cell has a bold font then place a leading 0 value against the cell value
+    If ActiveSheet.Cells(N, 1).Font.Bold = True Then
+        ActiveSheet.Cells(N, 1).Value = "0" & ActiveSheet.Cells(N, 1).Value
+    End If
+Next N
+ 
+'Clear any previous sort parameters
+ActiveSheet.Sort.SortFields.Clear
+ 
+'Sort the tabular data range. All the values with a leading 0 value will move to the top
+ActiveSheet.Range(Cells(1, 1), Cells(RCol, RRow)).Sort Key1:=Cells(1, 1), Header:=xlYes
+ 
+'Iterate through all the rows in the tabular data range ignoring the header row
+For N = 2 To RRow
+    'If a cell has a bold font then remove the leading 0 value from the cell value to _
+    '   restore the original values
+    If ActiveSheet.Cells(N, 1).Font.Bold = True Then
+        ActiveSheet.Cells(N, 1).Value = Mid(ActiveSheet.Cells(N, 1).Value, 2)
+    End If
+Next N
+ 
+'Turn screen updating back on
+Application.ScreenUpdating = True
+ 
+End Sub
+'Sheet1.Range("A1:E1").AutoFilter
+'Sheet1.Range("A1:E1").AutoFilter Field:=3, Criteria1:="Product A"
+'Sheet1.Range("A1:E1").AutoFilter Field:=3, Criteria1:=Array("Product A", "Product B"), Operator:=xlFilterValues
+'Sheet1.Range("A1:E1").AutoFilter Field:=1, Criteria1:=">=12/01/2018", Operator:=xlAnd, Criteria2:="<=12/31/2018"
+'Operator           Description
+'xlAnd              Includes multiple criteria – Criteria1 and Criteria 2
+'xlOr               Includes one of the multiple criteria – Criteria1 or Criteria 2
+'xlTop10Items       Filters a certain number of highest ranked values (number specified in Criteria1)
+'xlBottom10Items    Filters a certain number of lowest ranked values (number specified in Criteria1)
+'xlTop10Percent     Filters a certain percentage of highest ranked values (% specified in Criteria1)
+'xlBottom10Percent  Filters a certain percentage of lowest ranked values (% specified in Criteria1)
+'xlFilterValues     Includes multiple criteria values with Array
+'xlFilterCellColor  Filters cells for colors
+'xlFilterFontColor  Filters cells for font colors
+'xlFIlterIcon       Filters icons
+'xlFilterDynamic    Filter dynamic values
+'
+'
+'
+'
+'
+'
+'
+'
+'
+
+End Sub
+Public Sub KillFilter()
+  If ActiveSheet.AutoFilterMode Then
+     ActiveSheet.AutoFilterMode = False
+  End If
+End Sub
+Public Sub StartFilter()
+  If Not ActiveSheet.AutoFilterMode Then
+     ActiveSheet.Range("A1").AutoFilter
+  End If
+End Sub
+Public Sub StopAllFilters()
+  Dim ws As Worksheet
+  For Each ws In ActiveWorkbook.Worksheets
+   If ws.AutoFilterMode = True Then
+      ws.AutoFilterMode = False
+   End If
+  Next ws
+End Sub
+Public Sub StartAllFilters()
+  Dim ws As Worksheet
+  For Each ws In ActiveWorkbook.Worksheets
+   If Not ws.AutoFilterMode Then
+     ws.Range("A1").AutoFilter
+   End If
+  Next ws
+End Sub
+Public Sub ClearFilter()
+  If ActiveSheet.FilterMode = True Then
+   ActiveSheet.ShowAllData
+  End If
+End Sub
+
+Public Sub ClearAllFilters()
+  Dim ws As Worksheet
+  For Each ws In ActiveWorkbook.Worksheets
+   If ws.FilterMode = True Then
+     ws.ShowAllData
+   End If
+  Next ws
+End Sub
+Sub ClearFilterFromTable()
+  Dim ws As Worksheet
+  Dim sTable As String
+  Dim loTable As ListObject
+  sTable = "Table1"
+  Set ws = ActiveSheet
+  Set loTable = ws.ListObjects(sTable)
+  loTable.AutoFilter.ShowAllData
+End Sub
+
+Private Sub worksheet_SelectionChange(ByVal Target As Excel.Range)
+'Updateby Extendoffice
+If ActiveSheet.Name <> "Master" Then
+ActiveSheet.Name = "Master"
+End If
+End Sub
+
+With Application
+
+        .Calculation = xlCalculationManual
+        .ScreenUpdating = False
+        .EnableEvents = False
+        .DisplayAlerts = False
+        .Cursor = xlWait
+        .EnableCancelKey = xlErrorHandler
+    
+End With
+
+'GIUP CHUONG TRINH CHAY NHANH
+
+With Application
+
+        .Calculation = xlAutomatic
+        .ScreenUpdating = True
+        .EnableEvents = True
+        .DisplayAlerts = True
+        .Cursor = xlDefault
+        .EnableCancelKey = xlInterrupt
+    
+End With
+'COPY VISIBLE CELL ONLY, AFTER FILTER'
+Sub Copy_AutoFiltered_VisibleRows_NewSheet()
+'Declares CatSites i.e. Category of the Sites
+Dim CatSites As String
+'Education is the filtering criteria
+CatSites = "Education"
+'AutoFilter for a specific category of the sites which is in Column B
+ActiveSheet.Range("A1:E14").AutoFilter
+ActiveSheet.Range("A1:E14").AutoFilter field:=2, Criteria1:=CatSites
+'Copy only visible cells
+ActiveSheet.Range("A1:E14").SpecialCells(xlCellTypeVisible).Copy
+Worksheets("Sheet3").Range("A1").PasteSpecial Paste:=xlPasteAll
+Application.CutCopyMode = False
+'Remove AutoFilter
+ActiveSheet.AutoFilterMode = False
+End Sub
+
+Sub 111()
+worksheets ("sheet1").range("a1) .range (.cells(1), .end(xldown)).copy destination:=worksheets ("sheet2").Range ("A1")
+end sub
+
+Sub NHAP()
+Dim a As String
+Dim b As String
+a = InputBox("Nhap ngay thang nam ""BAT DAU"", theo dinh dang ddmmyyyy. VD: 14012022")
+b = InputBox("Nhap ngay thang nam ""KET THUC"", theo dinh dang ddmmyyyy. VD: 14012022")
+
+Range("A2").Value = Left(a, 2)
+Range("a3").Value = Mid(a, 3, 2)
+Range("a4").Value = Right(a, 4)
+Range("A5").Value = Left(b, 2)
+Range("a6").Value = Mid(b, 3, 2)
+Range("a7").Value = Right(b, 4)
+
+End Sub
